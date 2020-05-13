@@ -17,7 +17,7 @@ import org.json.JSONObject;
 
 public class GMapsServices {
 
-    protected static final String GOOGLE_API_KEY = "AIzaSyBQVW8pFcB8rgpse32NXErtPxiz1qlQRHc";
+    protected static final String GOOGLE_API_KEY = "GOOGLE_API_KEY";
 
     public static ArrayList<DistanceBetweenInfo> getClosePositions(String mode, LatLong originLatLong, ArrayList<Provider> providers) {
         ArrayList<DistanceBetweenInfo> distances = new ArrayList();

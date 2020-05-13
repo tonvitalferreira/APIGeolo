@@ -7,10 +7,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.geolo.api.models.DistanceBetweenInfo;
 import com.geolo.api.models.LatLong;
 import com.geolo.api.models.Provider;
-import com.geolo.api.models.ProviderRequestModel;
 import com.geolo.api.repository.ProviderRepository;
 import com.geolo.api.services.GMapsServices;
 import java.util.ArrayList;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,13 +18,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/providers")
 public class ProviderResource {
+
+    GMapsServices gMapService = new GMapsServices();
 
     ProviderRepository rep = new ProviderRepository();
     ObjectMapper mapper = new ObjectMapper();
@@ -60,7 +61,7 @@ public class ProviderResource {
         }
 
         //MOUNT THE JSON WITH CLOSE PROVIDERS
-        ArrayList<DistanceBetweenInfo> closeProviders = GMapsServices.getClosePositions("driving", origin, providers);
+        ArrayList<DistanceBetweenInfo> closeProviders = gMapService.getClosePositions("driving", origin, providers);
 
         for (DistanceBetweenInfo dInfo : closeProviders) {
             ArrayNode specialtys = mapper.createArrayNode();

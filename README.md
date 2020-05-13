@@ -7,6 +7,8 @@ Está API foi desenvolvida em Java com Spring boot.
 
 ## • Executar o deploy
     1 - clone ou baixe o .zip do projeto
+        1.1 - extraia e navegue até com.geolo.api.services e 
+        1.2 - adicione sua GOOGLE_API_KEY 
     2 - depois, no terminal, entre na pasta do projeto
     3 - execute: mvn package 
     4 - acesse a pasta "target", que foi gerada na build
