@@ -5,6 +5,13 @@ Está API foi desenvolvida em Java com Spring boot.
 ## • O que faz?
     • Mostra todos os prestadores de serviços mais pertos de uma localização(latitude, longitude)
 
+## • Executar o deploy
+    1 - clone ou baixe o .zip do projeto
+    2 - depois, no terminal, entre na pasta do projeto
+    3 - execute: mvn package 
+    4 - acesse a pasta "target", que foi gerada na build
+    5 - execute: java -jar api-geolo-0.0.1-SNAPSHOT.jar
+
 ## • Rotas:
 
     • [GET] - /providers/especialidade/latLong
