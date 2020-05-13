@@ -1,6 +1,6 @@
 # API Geolo
 
-Está API foi desenvolvida em Java com Spring boot.
+Está API foi desenvolvida em Java com Spring boot e Google Maps API.
 
 ## • O que faz?
     • Mostra todos os prestadores de serviços mais pertos de uma localização(latitude, longitude)
