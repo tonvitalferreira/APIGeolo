@@ -14,12 +14,12 @@ Está API foi desenvolvida em Java com Spring boot.
 
 ## • Rotas:
 
-    • [GET] - /providers/especialidade/latLong
+    • **[GET]** - /providers/especialidade/latLong
         - especialidade: String
         - latLong:       String
             • format: latitude,longitude
         - exemplo:
-            http://localhost:5000/providers/Cardiologista/-8.892890,-36.494820
+            http://localhost:1234/providers/Cardiologista/-8.892890,-36.494820
         - retorno: JSON com todos prestadores de serviços perto de LatLong(-8.892890,-36.494820)
 
     • [POST] - /providers
