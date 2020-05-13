@@ -14,7 +14,7 @@ Está API foi desenvolvida em Java com Spring boot.
 
 ## • Rotas:
 
-    • **[GET]** - /providers/especialidade/latLong
+    • [GET] - /providers/especialidade/latLong
         - especialidade: String
         - latLong:       String
             • format: latitude,longitude
