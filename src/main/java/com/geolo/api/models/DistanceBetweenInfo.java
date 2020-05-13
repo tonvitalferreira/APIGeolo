@@ -1,6 +1,6 @@
 package com.geolo.api.models;
 
-public class DistanceBetweenInfo {
+public class DistanceBetweenInfo implements Comparable<DistanceBetweenInfo> {
 
     private String originAddress, myAddress;
     private Provider destinationProvider;
@@ -53,6 +53,12 @@ public class DistanceBetweenInfo {
 
     public void setDuration(Duration duration) {
         this.duration = duration;
+    }
+
+    public int compareTo(DistanceBetweenInfo dist) {
+        Integer dist_a = dist.getDistance().getValue();
+        Integer dist_b = getDistance().getValue();
+        return dist_b.compareTo(dist_a);
     }
 
 }

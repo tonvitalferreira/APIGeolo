@@ -6,6 +6,7 @@ import com.geolo.api.models.Duration;
 import com.geolo.api.models.LatLong;
 import com.geolo.api.models.Provider;
 import java.util.ArrayList;
+import java.util.Collections;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -20,7 +21,7 @@ public class GMapsServices {
 
     public static ArrayList<DistanceBetweenInfo> getClosePositions(String mode, LatLong originLatLong, ArrayList<Provider> providers) {
         ArrayList<DistanceBetweenInfo> distances = new ArrayList();
-
+        System.out.println(providers.getClass().getName());
         String destinationsValidURL = "";
 
         if (providers.size() == 1) {
@@ -88,6 +89,7 @@ public class GMapsServices {
             distances.clear();
         }
 
+        Collections.sort(distances);
         return distances;
     }
 }

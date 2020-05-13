@@ -1,19 +1,24 @@
 package com.geolo.api.resources;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.geolo.api.models.DistanceBetweenInfo;
 import com.geolo.api.models.LatLong;
 import com.geolo.api.models.Provider;
+import com.geolo.api.models.ProviderRequestModel;
 import com.geolo.api.repository.ProviderRepository;
 import com.geolo.api.services.GMapsServices;
-import io.swagger.annotations.ApiOperation;
-import java.math.BigDecimal;
 import java.util.ArrayList;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,10 +29,11 @@ public class ProviderResource {
     ProviderRepository rep = new ProviderRepository();
     ObjectMapper mapper = new ObjectMapper();
 
-    @ApiOperation(value = "Retorna uma lista de prestadores de serviços de saude")
-    @GetMapping(value = "/{originLatLong}/{especialidade}", produces = "application/json")
+    @GetMapping(value = "/{especialidade}/{originLatLong}", produces = "application/json")
     public @ResponseBody
-    ObjectNode show(@PathVariable(value = "originLatLong") String originLatLong) {
+    ObjectNode showCloseProviders(
+            @PathVariable(value = "originLatLong") String originLatLong,
+            @PathVariable(value = "especialidade") String specialty) {
         ObjectNode ret = mapper.createObjectNode();
         LatLong origin = null;
 
@@ -46,12 +52,25 @@ public class ProviderResource {
 
         String originAddress = "not found";
         ArrayNode list = mapper.createArrayNode();
+        ArrayList providers = rep.getAllProvidersBySpecialtys(specialty);
+        if (providers.isEmpty()) {
+            ret.put("error", true);
+            ret.put("errorMsg", "Oops! Nenhum prestador de serviços com essa espcialidade foi encontrada.");
+            return ret;
+        }
 
         //MOUNT THE JSON WITH CLOSE PROVIDERS
-        ArrayList<DistanceBetweenInfo> closeProviders = GMapsServices.getClosePositions("driving", origin, rep.getAllProviders());
+        ArrayList<DistanceBetweenInfo> closeProviders = GMapsServices.getClosePositions("driving", origin, providers);
+
         for (DistanceBetweenInfo dInfo : closeProviders) {
+            ArrayNode specialtys = mapper.createArrayNode();
+            for (String spec : dInfo.getDestinationProvider().getSpecialtys()) {
+                specialtys.add(spec);
+            }
+
             ObjectNode node = mapper.createObjectNode();
-            node.put("nome", dInfo.getDestinationProvider().getNome());
+            node.put("nome", dInfo.getDestinationProvider().getName());
+            node.put("especialidades", specialtys);
             node.put("endereco", dInfo.getMyAddress());
             node.put("latidute", dInfo.getDestinationProvider().getLatLong().getLatitude());
             node.put("longitude", dInfo.getDestinationProvider().getLatLong().getLongitude());
@@ -64,37 +83,51 @@ public class ProviderResource {
             }
         }
 
+        //MOUNT THE REQUEST OBJECT TO VIEW
         ObjectNode addressOriginNode = mapper.createObjectNode();
         addressOriginNode.put("enderecoDeOrigem", originAddress);
         addressOriginNode.put("latitude", origin.getLatitude());
         addressOriginNode.put("longitude", origin.getLongitude());
 
+        ret.put("error", false);
         ret.put("origem", addressOriginNode);
         ret.put("prestadores", list);
 
         return ret;
     }
 
-    /*
-    @ApiOperation(value = "Retorna uma lista de prestadores de serviços de saude")
-    @GetMapping(produces = "application/json")
-    @RequestMapping("/close")
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json")
     public @ResponseBody
-    ArrayNode showClose() {
-        ArrayNode list = mapper.createArrayNode();
-        ArrayList<LatLong> destinations = new ArrayList<>();
-        destinations.add(new LatLong(-8.892890, -36.494820));
+    ObjectNode addProvider(@RequestBody JsonNode provider) {
+        String name = provider.get("nome").asText(), specialty = provider.get("especialidade").asText();
+        double latitude = provider.get("latitude").asDouble(), longitude = provider.get("longitude").asDouble();
 
-        for (Provider pro : rep.getAllProviders()) {
-            GMapsServices.getDistanceBetween("driving", pro.getLatLong(), destinations);
-            ObjectNode node = mapper.createObjectNode();
-            node.put("nome", pro.getNome());
-            node.put("endereco", pro.getEndereco());
-            node.put("latidute", pro.getLatLong().getLatitude());
-            node.put("longitude", pro.getLatLong().getLongitude());
-            node.put("distanciaEmKm", (Math.random() * 1000));
-            list.add(node);
+        ObjectNode retNode = mapper.createObjectNode();
+        if (rep.addProvider(new Provider(name, specialty, new LatLong(latitude, longitude)))) {
+            retNode.put("error", false);
+            retNode.put("msg", "O prestador de serviço \"" + name + "\" foi adicionado com sucesso!");
+        } else {
+            retNode.put("error", true);
+            retNode.put("msg", "Erro ao adicionar o prestador de serviço \"" + name + "\"!");
         }
-        return list;
-    }*/
+
+        return retNode;
+    }
+
+    @PutMapping(produces = "application/json")
+    public @ResponseBody
+    ObjectNode addSpecialty(@RequestBody JsonNode provider) {
+        String name = provider.get("nome").asText(), specialty = provider.get("especialidade").asText();
+
+        ObjectNode retNode = mapper.createObjectNode();
+        if (rep.addSpecialtyByProviderName(name, specialty)) {
+            retNode.put("error", false);
+            retNode.put("msg", "Especialidade \"" + specialty + "\" adicionado à \"" + name + "\" com sucesso!");
+        } else {
+            retNode.put("error", true);
+            retNode.put("msg", "\"" + name + "\" não foi encontrado no sistema!");
+        }
+
+        return retNode;
+    }
 }

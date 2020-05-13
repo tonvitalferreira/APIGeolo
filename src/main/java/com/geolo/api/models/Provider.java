@@ -1,30 +1,40 @@
 package com.geolo.api.models;
 
+import java.util.ArrayList;
+
 public class Provider {
 
-    private String nome, endereco;
+    private String name;
+    private ArrayList<String> specialtys;
     private LatLong latLong;
 
-    public Provider(String nome, String endereco, LatLong latLong) {
-        this.nome = nome;
-        this.endereco = endereco;
+    public Provider(String name, String specialty, LatLong latLong) {
+        this.name = name;
+        this.specialtys = new ArrayList<>();
+        specialtys.add(specialty);
         this.latLong = latLong;
     }
 
-    public String getNome() {
-        return nome;
+    public Provider(String name, ArrayList<String> specialtys, LatLong latLong) {
+        this.name = name;
+        this.specialtys = specialtys;
+        this.latLong = latLong;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public String getName() {
+        return name;
     }
 
-    public String getEndereco() {
-        return endereco;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setEndereco(String endereco) {
-        this.endereco = endereco;
+    public ArrayList<String> getSpecialtys() {
+        return specialtys;
+    }
+
+    public void setSpecialtys(ArrayList<String> specialtys) {
+        this.specialtys = specialtys;
     }
 
     public LatLong getLatLong() {
@@ -33,6 +43,10 @@ public class Provider {
 
     public void setLatLong(LatLong latLong) {
         this.latLong = latLong;
+    }
+
+    public void addSpecialty(String specialty) {
+        specialtys.add(specialty);
     }
 
 }

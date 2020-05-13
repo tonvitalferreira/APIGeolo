@@ -1,4 +1,4 @@
-package com.example;
+package com.geolo.api;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
